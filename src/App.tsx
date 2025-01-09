@@ -16,6 +16,8 @@ function App() {
   const [options, setOptions] = useState<string[]>([]);
   const [score, setScore] = useState(0);
   const [questionIndex, setQuestionIndex] = useState(0);
+  const [resultMessage, setResultMessage] = useState<string | null>(null); // 正解・不正解メッセージ
+  const [showNextButton, setShowNextButton] = useState(false); // 次の問題ボタンの表示制御
 
   // API から駅データを取得
   useEffect(() => {
@@ -37,6 +39,8 @@ function App() {
     const shuffledOptions = shuffleArray([station.reading, ...station.wrongReadings]);
     setCurrentQuestion(station);
     setOptions(shuffledOptions);
+    setResultMessage(null); // 結果メッセージをリセット
+    setShowNextButton(false); // 次の問題ボタンを非表示にする
   };
 
   // 選択肢をシャッフルする関数
@@ -47,15 +51,25 @@ function App() {
   // 回答をチェックする
   const handleAnswer = (selected: string) => {
     if (!currentQuestion) return;
+
     if (selected === currentQuestion.reading) {
       setScore((prevScore) => prevScore + 1);
+      setResultMessage('正解！');
+    } else {
+      setResultMessage(`残念！正解は「${currentQuestion.reading}」です。`);
     }
+
+    setShowNextButton(true); // 次の問題ボタンを表示
+  };
+
+  // 次の問題に進む
+  const handleNextQuestion = () => {
     const nextIndex = questionIndex + 1;
     if (nextIndex < stations.length) {
       setQuestionIndex(nextIndex);
       setQuestion(stations[nextIndex]);
     } else {
-      alert(`クイズ終了！あなたのスコア: ${score + 1} / ${stations.length}`);
+      alert(`クイズ終了！あなたの正解数は ${stations.length} 問中 ${score} 問です。`);
       setScore(0);
       setQuestionIndex(0);
       setQuestion(stations[0]);
@@ -64,23 +78,31 @@ function App() {
 
   return (
     <div className="App">
-      <h1>駅名読みクイズ</h1>
+      <h2>難読駅名読みクイズ</h2>
       {currentQuestion ? (
         <div>
-          <h2>{currentQuestion.stationName}（{currentQuestion.lineName}）</h2>
+          <h1>{currentQuestion.stationName}</h1>
+          <p>所属路線: {currentQuestion.lineName}</p>
           <p>所在地: {currentQuestion.location}</p>
+          <p>読み方はどれでしょう？</p>
           <div className="options">
             {options.map((option, index) => (
-              <button key={index} onClick={() => handleAnswer(option)}>
+              <button key={index} onClick={() => handleAnswer(option)} disabled={showNextButton}>
                 {option}
               </button>
             ))}
           </div>
+          {resultMessage && <p className="result-message">{resultMessage}</p>}
+          {showNextButton && (
+            <button className="next-button" onClick={handleNextQuestion}>
+              次の問題
+            </button>
+          )}
         </div>
       ) : (
         <p>読み込み中...</p>
       )}
-      <p>スコア: {score}</p>
+      <p>正解数: {score} / {stations.length}</p>
     </div>
   );
 }
