@@ -78,7 +78,7 @@ function App() {
 
   return (
     <div className="App">
-      <h2>難読駅名読みクイズ</h2>
+      <h2>難読駅名クイズ</h2>
       {currentQuestion ? (
         <div>
           <h1>{currentQuestion.stationName}</h1>
