@@ -23,7 +23,7 @@ function App() {
   useEffect(() => {
     async function fetchStations() {
       try {
-        const response = await fetch('https://stations-api.takeo-t.workers.dev/stations');
+        const response = await fetch(import.meta.env.VITE_API_URI);
         const data: Station[] = await response.json();
         setStations(data);
         setQuestion(data[0]); // 最初の質問をセット
