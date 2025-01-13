@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
+import ManageQuestionsPage from './pages/ManageQuestionsPage';
 
 type Station = {
   stationId: number;
@@ -77,33 +79,45 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h2>難読駅名クイズ</h2>
-      {currentQuestion ? (
-        <div>
-          <h1>{currentQuestion.stationName}</h1>
-          <p>所属路線: {currentQuestion.lineName}</p>
-          <p>所在地: {currentQuestion.location}</p>
-          <p>読み方はどれでしょう？</p>
-          <div className="options">
-            {options.map((option, index) => (
-              <button key={index} onClick={() => handleAnswer(option)} disabled={showNextButton}>
-                {option}
-              </button>
-            ))}
-          </div>
-          {resultMessage && <p className="result-message">{resultMessage}</p>}
-          {showNextButton && (
-            <button className="next-button" onClick={handleNextQuestion}>
-              次の問題
-            </button>
-          )}
-        </div>
-      ) : (
-        <p>読み込み中...</p>
-      )}
-      <p>正解数: {score} / {stations.length}</p>
-    </div>
+    <Router>
+      <div className="App">
+        <nav>
+          <Link to="/">ホーム</Link> | <Link to="/manage-questions">問題管理</Link>
+        </nav>
+        <Routes>
+          <Route path="/" element={
+            <div>
+              <h2>難読駅名クイズ</h2>
+              {currentQuestion ? (
+                <div>
+                  <h1>{currentQuestion.stationName}</h1>
+                  <p>所属路線: {currentQuestion.lineName}</p>
+                  <p>所在地: {currentQuestion.location}</p>
+                  <p>読み方はどれでしょう？</p>
+                  <div className="options">
+                    {options.map((option, index) => (
+                      <button key={index} onClick={() => handleAnswer(option)} disabled={showNextButton}>
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                  {resultMessage && <p className="result-message">{resultMessage}</p>}
+                  {showNextButton && (
+                    <button className="next-button" onClick={handleNextQuestion}>
+                      次の問題
+                    </button>
+                  )}
+                </div>
+              ) : (
+                <p>読み込み中...</p>
+              )}
+              <p>正解数: {score} / {stations.length}</p>
+            </div>
+          } />
+          <Route path="/manage-questions" element={<ManageQuestionsPage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
