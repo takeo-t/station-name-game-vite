@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css';
 import ManageQuestionsPage from './pages/ManageQuestionsPage';
 
@@ -81,9 +81,6 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <nav>
-          <Link to="/">ホーム</Link> | <Link to="/manage-questions">問題管理</Link>
-        </nav>
         <Routes>
           <Route path="/" element={
             <div>
