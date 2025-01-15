@@ -29,6 +29,22 @@ const ManageQuestionsPage: React.FC = () => {
     fetchStations();
   }, []);
 
+  const handleInputChange = (index: number, field: string, value: string) => {
+    const newStations = [...stations];
+    if (field === 'wrongReadings') {
+      newStations[index].wrongReadings = value.split(',').map((item) => item.trim());
+    } else {
+      newStations[index] = { ...newStations[index], [field]: value };
+    }
+    setStations(newStations);
+  };
+
+  const handleWrongReadingChange = (stationIndex: number, readingIndex: number, value: string) => {
+    const newStations = [...stations];
+    newStations[stationIndex].wrongReadings[readingIndex] = value;
+    setStations(newStations);
+  }
+
   if (loading) {
     return <p>読み込み中...</p>;
   }
@@ -40,7 +56,7 @@ const ManageQuestionsPage: React.FC = () => {
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">問題管理ページ</h1>
-      <table className="min-w-full bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden">
+      <table className="min-w-full bg-white dark:bg-gray-800 shadow-md rounded-lg overflow-hidden border-collapse">
         <thead>
           <tr>
             <th className="py-2 px-4 bg-gray-100 dark:bg-gray-700">駅名</th>
@@ -51,20 +67,62 @@ const ManageQuestionsPage: React.FC = () => {
           </tr>
         </thead>
         <tbody>
-          {stations.map((station, index) => (
-            <tr key={station.stationId} className={index % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : 'bg-white dark:bg-gray-800'}>
-              <td className="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{station.stationName}</td>
-              <td className="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{station.reading}</td>
-              <td className="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{station.lineName}</td>
-              <td className="py-2 px-4 border-b border-gray-200 dark:border-gray-700">{station.location}</td>
-              <td className="py-2 px-4 border-b border-gray-200 dark:border-gray-700">
-                {station.wrongReadings.join(', ')}
+          {stations.map((station, stationIndex) => (
+            <tr
+              key={station.stationId}
+              className={stationIndex % 2 === 0 ? 'bg-gray-50 dark:bg-gray-900' : 'bg-white dark:bg-gray-800'}
+            >
+              <td className="py-2 px-4">
+                <input
+                  type="text"
+                  value={station.stationName}
+                  onChange={(e) => handleInputChange(stationIndex, 'stationName', e.target.value)}
+                  className="w-full bg-transparent border-0 border-b border-gray-300 focus:border-blue-500 focus:ring-0"
+                />
+              </td>
+              <td className="py-2 px-4">
+                <input
+                  type="text"
+                  value={station.reading}
+                  onChange={(e) => handleInputChange(stationIndex, 'reading', e.target.value)}
+                  className="w-full bg-transparent border-0 border-b border-gray-300 focus:border-blue-500 focus:ring-0"
+                />
+              </td>
+              <td className="py-2 px-4">
+                <input
+                  type="text"
+                  value={station.lineName}
+                  onChange={(e) => handleInputChange(stationIndex, 'lineName', e.target.value)}
+                  className="w-full bg-transparent border-0 border-b border-gray-300 focus:border-blue-500 focus:ring-0"
+                />
+              </td>
+              <td className="py-2 px-4">
+                <input
+                  type="text"
+                  value={station.location}
+                  onChange={(e) => handleInputChange(stationIndex, 'location', e.target.value)}
+                  className="w-full bg-transparent border-0 border-b border-gray-300 focus:border-blue-500 focus:ring-0"
+                />
+              </td>
+              <td className="py-2 px-4">
+                <div className="flex gap-2">
+                  {station.wrongReadings.map((reading, readingIndex) => (
+                    <input
+                      key={readingIndex}
+                      type="text"
+                      value={reading}
+                      onChange={(e) =>
+                        handleWrongReadingChange(stationIndex, readingIndex, e.target.value)
+                      }
+                      className="w-full bg-transparent border-0 border-b border-gray-300 focus:border-blue-500 focus:ring-0"
+                    />
+                  ))}
+                </div>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
-      {/* ここに問題を追加・修正するフォームや機能を追加 */}
     </div>
   );
 };
